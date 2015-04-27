@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+	<title>2DBarCode_j4l.cfc</title>
+	<style type="text/css" media="screen">
+		body
+		{
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+			color: #000;
+			background-color: #ddd;
+		}
+		
+		#container
+		{
+			margin: 0;
+			background-color: #FFF;
+			background-image:  url(images/background.jpg);
+			background-repeat: repeat-y;
+		}
+		
+		#banner
+		{
+			background-color: #666;
+			border-bottom: 1px solid #333;
+		}
+		
+		#banner h1
+		{
+			margin: 0;
+			padding: .5em;
+		}
+		
+		#nav
+		{
+			float: left;
+			width: 160px;
+			margin-left: 10px;
+			padding-top: 1em;
+		}
+		
+		#nav p { margin-top: 0; }
+		
+		#content
+		{
+			padding-top: 1em;
+			margin: 0 2em 0 200px;
+		}
+		
+		#content h2 { margin-top: 0; }
+		
+		#footer
+		{
+			clear: both;
+			background-color: #666;
+			padding: 1em;
+			text-align: center;
+			border-top: 1px solid #333;
+		}
+</style>
+</head>
+<body>
+<div id="container">
+	<div id="banner">
+		<h1>2DBarCode_j4l.cfc</h1>
+	</div>
+	<div id="nav">
+		<p>
+		A wrapper for Java4Less
+		2D Barcode libraries.</p>
+		<p>
+		Written by <a href="http://www.stillnetstudios.com">Ryan Stille</a>
+		<a href="mailto:ryan@cfwebtools.com">ryan@cfwebtools.com</a>
+		</p>
+		<br>
+		<br>
+		
+		<p>
+		Want to see what a DataMatrix barcode looks like? Try
+		<a href="http://flickr.com/photos/scratchbeck/350694449/">this one</a>
+		and <a href="http://flickr.com/photos/schickr/334023823/">another</a>.
+		</p>
+		
+		<p>
+		And if you're lucky an example will display below from flickr:<br>
+		<img src="http://farm1.static.flickr.com/141/350694449_e4b3ef0290_t.jpg">
+		</p>
+	</div>
+	<div id="content">
+		<h2>
+			Summary
+		</h2>
+		<p>
+
+Use this CFC as a wrapper to access the java 2D BarCode libraries from Java4Less.	
+To use this you'll need to purchase the related java libraries from Java4less - <a href="http://www.java4less.com">http://www.java4less.com.</a>
+They do have a free evaluation version for download that will work fine for testing.
+I have no affiliation with them other than I needed to use their product in ColdFusion.
+Note that this class only deals with 2D/Data Matrix barcodes.  Java4Less offers 
+libraries for reading/writing regular barcodes, but I have not used them. Works on
+any image type that the ColdFusion cfimage tag can read. 
+
+		</p>
+		
+		<p>
+		The java libraries this works with are:<br>
+		
+		Reader: Datamatrix Vision for Java - <a href="http://www.java4less.com/vision/vision.php?info=download">evaluation version available from here</a><br>
+		Writer: RBarcode for Java - <a href="http://www.java4less.com/barcodes/barcodes.php?info=download">evaluation version available from here</a>
+		</p>
+		
+		<p>
+		You'll need to copy the jar file in each of those archives to your {coldfusion-install-dir}/lib directory, or place
+		them somewhere else and add the path to them in your java.class.path setting in jvm.config.
+		</p>
+		<h2>
+			Requires
+		</h2>
+		<p>
+
+		<ul>
+		<li>ColdFusion 8</li>
+		</ul>
+
+		</p>
+		
+				<h2>
+			Usage
+		</h2>
+		<p>
+		
+		<p>
+		First create and initalize the object.
+		<pre>
+&lt;cfset BarCoder = CreateObject("component","2DBarCode_j4l").init()&gt;	</pre>
+		</p>
+		
+		
+		<h3>Reading Barcodes</h3>
+		
+		
+		<p>
+		
+There are two methods you can call to read a barcode: <strong>readFromImage()</strong> and <strong>readFromFile()</strong>.  readFromImage() takes a ColdFusion image object as an argument.  readFromFile() takes a string that is a path to the file to be read.  All image types that the cfimage tag can read are supported.
+		</p>
+		
+		
+		<p>
+<pre>
+&lt;cfset results = BarCoder.readFromImage(myImageObject)&gt;
+or
+&lt;cfset results = BarCoder.readFromFile("myFile.png")&gt;
+</pre>
+		</p>
+		
+		<p>
+		The methods return an array of barcodes that were found in the image. Each element in
+		the array contains the following structure:
+			<table border cellpadding="3">
+		<tr>
+		<td><b>Key</b></td>
+		<td><b>Description</b></td>
+		</tr>
+		<tr>
+		<td>x</td>
+		<td>The x coordinate of where the barcode was found on the image.</td>
+		</tr>
+		<tr>
+		<td>y</td>
+		<td>The y coordinate of where the barcode was found on the image.</td>
+		</tr>
+		<tr>
+		<td>value</td>
+		<td>The value that was read from the barcode.</td>
+		</tr>		
+		</table>
+		
+		<br>
+		If no barcodes were found, an empty array is returned.
+		</p>
+		
+		<h3>Creating Barcodes</h3>
+		<p>
+
+		Basic example:
+<pre>
+&lt;cfset ImageObjContainingBarcode = BarCoder.createBarCode(text='my text to place into barcode')&gt;
+</pre>
+
+<em>ImageContainingBarcode</em> is now a ColdFusion image object, you can write it to file or sent it to the
+browser or whatever you need to do.
+</p>
+
+<p>There are several more options that can be passed into the createBarCode method:
+			<table border cellpadding="3">
+		<tr>
+		<td><b>Argument</b></td>
+		<td><b>Description</b></td>
+		<td><b>Default</b></td>
+		</tr>
+		<tr>
+		<td>text</td>
+		<td>The text to encode into a barcode.</td>
+		<td>&nbsp;</td>
+		</tr>
+		<tr>
+		<td valign="top">dotPixels</td>
+		<td>The number of pixels that create each square in the barcode. (Use 2-7, see known issues)</td>
+		<td valign="top">4</td>
+		</tr>
+		<tr>
+		<td valign="top">encoding</td>
+		<td>One of the following: E_ASCII, E_AUTO, E_BASE256, E_C40, E_NONE, E_TEXT.  Only tested with E_ASCII.</td>
+		<td valign="top">E_ASCII</td>
+		</tr>		
+		<tr>
+		<td valign="top">preferredFormat</td>
+		<td>Code representing the perferred generated barcode size.  Barcode will expand beyond this if necessary. See <em>perferredFormat codes</em> below.</td>
+		<td valign="top">C10X10</td>
+		</tr>
+		<tr>
+		<td valign="top">margin</td>
+		<td>Pixels of margin around the barcode.  Only used on the top and left sides.</td>
+		<td valign="top">0</td>
+		</tr>
+		<tr>
+		<td>width</td>
+		<td>Width of the image containing the barcode</td>
+		<td>200</td>
+		</tr>
+		<tr>
+		<td>height</td>
+		<td>Height of the image containing the barcode</td>
+		<td>200</td>
+		</tr>
+		</table>
+
+</p>
+
+<h3>preferredFormat Codes</h3>
+<p>
+C10X10 - 10 squares by 10 squares<br>
+C12X12 - etc.<br>
+C14X14<br>
+C16X16<br>
+C18X18<br>
+C20X20<br>
+C22X22<br>
+C24X24<br>
+C26X26<br>
+C32X32<br>
+C36X36<br>
+C40X40<br>
+C44X44<br>
+C48X48<br>
+C52X52<br>
+C64X64<br>
+C72X72<br>
+C80X80<br>
+C88X88<br>
+C96X96<br>
+C104X104<br>
+C120X120<br>
+C132X132<br>
+C144X144<br>
+C8X18<br>
+C8X32<br>
+C12X26<br>
+C12X36<br>
+C16X36<br>
+C16X48<br>
+</p>
+
+<h3>Known Issues</h3>
+
+<p>
+1. If you try to create a barcode containing only a single character,
+you will get a java 'array out of bounds' error.
+</p>
+
+<p>2. If you change the dotPixels value from the default of 4 be aware that I could only
+decode images that were created with a dotPixels value between 2 and 7.  If you need
+a larger barcode that what dotPixels=7 will give you, you can try resizing the
+generated image with ImageResize().  This has proven reliable for me as long
+as the original image was created with a dotPixels of between 2-7.  If you can
+explain why that is please email me!</p>
+
+<p>3. If you are working with the evaluation versions of the Java4Less library, you
+will want to set your margin to 20 or higher so the barcode is not displayed
+on top of their evaluation warning message. (otherwise you probably won't be able to decode it)</p>
+
+<p align="center">
+Send feedback to <a href="mailto:ryan@cfwebtools.com">ryan@cfwebtools.com</a>
+</p>
+
+		
+	</div>
+	<div id="footer">
+		Thanks to my employer <a href="http://www.cfwebtools.com">CF WebTools</a> for
+		allowing me to publish this code.
+	</div>
+</div>
+</body>
+</html>
